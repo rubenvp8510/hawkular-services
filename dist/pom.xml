@@ -87,7 +87,6 @@
         <configuration>
           <excludes combine.children="append">
             <exclude>src/main/resources/**/*.css</exclude>
-            <exclude>src/main/resources/**/hosts</exclude>
           </excludes>
         </configuration>
       </plugin>

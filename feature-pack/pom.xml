@@ -111,6 +111,28 @@
 
   <build>
     <plugins>
+      <!-- copy the direct content that is to be deployed as part of the feature pack -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-content</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/feature-pack-resources/content</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/content</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- Unpack the upstream artifacts that host various *.xml files that we want to use unchanged or adapt in the next steps -->
       <plugin>
@@ -319,6 +341,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>src/main/content/**/hosts</exclude>
+          </excludes>
+        </configuration>
       </plugin>
 
     </plugins>
