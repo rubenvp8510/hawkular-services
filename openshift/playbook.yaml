@@ -98,7 +98,7 @@
         -v HAWKULAR_SERVICES_DATA_LIMIT={{ hawkular_services_data_limit }} CASSANDRA_DATA_LIMIT={{ cassandra_data_limit }}
         | oc create -f -
       register: command_result
-      when: oc_client_before_15 is defined and oc_client_before_15.stdout
+      when: oc_client_before_15 is defined and not oc_client_before_15|skipped and oc_client_before_15.stdout
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
@@ -129,7 +129,7 @@
         ROUTE_NAME={{ route_name }}
         | oc create -f -
       register: command_result
-      when: oc_client_before_15 is defined and oc_client_before_15.stdout
+      when: oc_client_before_15 is defined and not oc_client_before_15|skipped and oc_client_before_15.stdout
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
