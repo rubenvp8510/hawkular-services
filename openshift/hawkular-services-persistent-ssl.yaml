@@ -266,7 +266,7 @@ objects:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 1Gi
+        storage: ${HAWKULAR_SERVICES_DATA_LIMIT}
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
@@ -276,4 +276,4 @@ objects:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 1Gi
+        storage: ${CASSANDRA_DATA_LIMIT}
