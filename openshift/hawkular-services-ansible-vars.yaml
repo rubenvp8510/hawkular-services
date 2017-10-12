@@ -18,7 +18,7 @@
 ---
 project_name: myproject
 
-openshift_cluster_version: v1.5.1
+openshift_cluster_version: v3.6.0
 
 # put here your publicly available ip addresss or hostname if you want to expose it
 # if left blank, it will be defaulted
@@ -28,7 +28,7 @@ hawkular_services_image: hawkular/hawkular-services:0.38.0.Final
 
 hawkular_services_data_limit: 1Gi
 
-cassandra_image: openshift/origin-metrics-cassandra:{{openshift_cluster_version}}
+cassandra_image: openshift/origin-metrics-cassandra:v1.5.1
 
 cassandra_data_limit: 2Gi
 
@@ -45,3 +45,13 @@ hawkular_user: ""
 
 # if left blank, it will be auto-generated
 hawkular_password: ""
+
+hawkular_use_ssl: true
+
+service_account: hawkular-service-account
+
+secret_name: hawkular-ssl-secret
+
+ssl_private_key: ./cert-examples/hawkular-services-private.key
+
+ssl_public_key: ./cert-examples/hawkular-services-public.pem

@@ -114,6 +114,22 @@
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
+    - name: Create secret for SSL Certificates
+      shell: "oc secret new {{ secret_name }} {{ ssl_private_key }} {{ ssl_public_key }}"
+      when: hawkular_use_ssl
+
+    - name: Create service account for secret
+      shell: "oc create serviceaccount {{ service_account }} -n {{ project_name }}"
+      when: hawkular_use_ssl
+
+    - name: Add view role for service account
+      shell: "oc policy add-role-to-user view system:serviceaccount:{{ project_name }}:{{ service_account }} -n {{ project_name }}"
+      when: hawkular_use_ssl
+
+    - name: Link secret with service account
+      shell: "oc secrets link serviceaccount/{{ service_account }} secret/{{ secret_name }}"
+      when: hawkular_use_ssl
+
     - name: Log in as developer
       shell: "oc login -u developer -p developer"
 
@@ -129,7 +145,7 @@
         ROUTE_NAME={{ route_name }}
         | oc create -f -
       register: command_result
-      when: oc_client_before_15 is defined and not oc_client_before_15|skipped and oc_client_before_15.stdout
+      when: oc_client_before_15 is defined and not oc_client_before_15|skipped and oc_client_before_15.stdout and not hawkular_use_ssl
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
@@ -145,7 +161,41 @@
         --param ROUTE_NAME={{ route_name }}
         | oc create -f -
       register: command_result
-      when: oc_client_before_15.stdout is not defined
+      when: oc_client_before_15.stdout is not defined and not hawkular_use_ssl
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Install Hawkular Services (old api with SSL)
+      shell: >
+        oc process -f ./hawkular-services-persistent-ssl.yaml
+        -v HAWKULAR_SERVICES_IMAGE={{ hawkular_services_image }}
+        CASSANDRA_IMAGE={{ cassandra_image }}
+        ROUTE_HOSTNAME={{ route_hostname }}
+        HAWKULAR_SECRET={{ secret_name }}
+        SERVICE_ACCOUNT_NAME={{ service_account }}
+        `[ -z "{{ hawkular_user }}" ] || echo "HAWKULAR_USER={{ hawkular_user }}"` \
+        `[ -z "{{ hawkular_password }}" ] || echo "HAWKULAR_PASSWORD={{ hawkular_password }}"` \
+        ROUTE_NAME={{ route_name }}
+        | oc create -f -
+      register: command_result
+      when: oc_client_before_15 is defined and not oc_client_before_15|skipped and oc_client_before_15.stdout and hawkular_use_ssl
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
+    - name: Install Hawkular Services (new api with SSL)
+      shell: >
+        oc process -f ./hawkular-services-persistent-ssl.yaml
+        --param HAWKULAR_SERVICES_IMAGE={{ hawkular_services_image }}
+        --param CASSANDRA_IMAGE={{ cassandra_image }}
+        --param ROUTE_HOSTNAME={{ route_hostname }}
+        --param HAWKULAR_SECRET={{ secret_name }}
+        --param SERVICE_ACCOUNT_NAME={{ service_account }}
+        `[ -z "{{ hawkular_user }}" ] || echo "--param HAWKULAR_USER={{ hawkular_user }}"` \
+        `[ -z "{{ hawkular_password }}" ] || echo "--param HAWKULAR_PASSWORD={{ hawkular_password }}"` \
+        --param ROUTE_NAME={{ route_name }}
+        | oc create -f -
+      when: oc_client_before_15.stdout is not defined and hawkular_use_ssl
+      register: command_result
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
@@ -169,3 +219,14 @@
           - "Password: {{ real_hawkular_password.stdout }}"
           - "It may take a minute or two to spin the containers. Especially if it is pulling the images."
           - "Consider running   watch oc get pod -l name=hawkular-services    ..to find out when it is ready."
+      when: not hawkular_use_ssl
+
+    - name: Print out the hawkular-services address
+      debug:
+        msg:
+          - "The hostname for the Hawkular Services service is: https://{{ hawkular_services_address.stdout }}"
+          - "Username: {{ real_hawkular_user.stdout }}"
+          - "Password: {{ real_hawkular_password.stdout }}"
+          - "It may take a minute or two to spin the containers. Especially if it is pulling the images."
+          - "Consider running   watch oc get pod -l name=hawkular-services    ..to find out when it is ready."
+      when: hawkular_use_ssl
