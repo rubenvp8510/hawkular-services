@@ -269,6 +269,16 @@
           <artifactId>groovy-maven-plugin</artifactId>
           <version>${version.org.codehaus.gmaven.groovy-maven-plugin}</version>
         </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <configuration>
+            <excludes combine.children="append">
+              <exclude>openshift/cert-examples/**/*.pem</exclude>
+              <exclude>openshift/cert-examples/**/*.key</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
