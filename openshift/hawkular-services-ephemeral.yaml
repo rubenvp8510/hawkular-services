@@ -21,15 +21,17 @@ metadata:
   name: hawkular-services
   annotations:
     openshift.io/display-name: Hawkular Services
-    description: Hawkular-Services all-in-one (including Hawkular Metrics, Hawkular Alerts and Hawkular Inventory).
+    description: Hawkular Services all-in-one (including Hawkular Metrics, Hawkular Alerts and Hawkular Inventory).
     iconClass: icon-wildfly
     tags: hawkular,hawkular-services,metrics,alerts,manageiq,cassandra
 parameters:
 - name: HAWKULAR_SERVICES_IMAGE
-  description: What docker image should be used for hawkular-services.
+  description: What docker image should be used for Hawkular Services.
+  displayName: Hawkular Services Docker Image
   value: hawkular/hawkular-services:0.38.0.Final
 - name: CASSANDRA_IMAGE
   description: What docker image should be used for cassandra node.
+  displayName: Cassandra Docker Image
   value: openshift/origin-metrics-cassandra:v1.5.1
 - name: CASSANDRA_MEMORY_LIMIT
   description: Maximum amount of memory for Cassandra container.
@@ -48,17 +50,17 @@ parameters:
   value: "true"
 - name: HAWKULAR_USER
   description: Username that is used for accessing the Hawkular Services, if left blank a value will be generated.
-  displayName: Hawkular User
+  displayName: Hawkular Services User
   from: '[a-zA-Z0-9]{16}'
   generate: expression
 - name: HAWKULAR_PASSWORD
   description: Password that is used for accessing the Hawkular Services, if left blank a value will be generated.
-  displayName: Hawkular Password
+  displayName: Hawkular Services Password
   from: '[a-zA-Z0-9]{16}'
   generate: expression
 labels:
   template: hawkular-services
-message: Credentials for hawkular-services are ${HAWKULAR_USER}:${HAWKULAR_PASSWORD}
+message: Credentials for Hawkular Services are ${HAWKULAR_USER}:${HAWKULAR_PASSWORD}
 
 objects:
 - apiVersion: v1

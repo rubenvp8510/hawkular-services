@@ -21,13 +21,13 @@ metadata:
   name: hawkular-services
   annotations:
     openshift.io/display-name: Hawkular Services
-    description: Hawkular-Services all-in-one (including Hawkular Metrics, Hawkular Alerts and Hawkular Inventory).
+    description: Hawkular Services all-in-one (including Hawkular Metrics, Hawkular Alerts and Hawkular Inventory).
     iconClass: icon-wildfly
     tags: hawkular,hawkular-services,metrics,alerts,manageiq,cassandra
 
 parameters:
 - name: HAWKULAR_SERVICES_IMAGE
-  description: What docker image should be used for hawkular-services.
+  description: What docker image should be used for Hawkular Services.
   displayName: Hawkular Services Docker Image
   value: hawkular/hawkular-services:0.38.0.Final
 - name: CASSANDRA_IMAGE
@@ -43,7 +43,7 @@ parameters:
   displayName: Cassandra Container Data Limit
   value: 2Gi
 - name: HAWKULAR_SERVICES_DATA_LIMIT
-  description: Maximum amount data used by hawkular-services container (mostly logging).
+  description: Maximum amount data used by Hawkular Services container (mostly logging).
   displayName: Hawkular Services Container Data Limit
   value: 1Gi
 - name: ROUTE_NAME
@@ -55,12 +55,12 @@ parameters:
   displayName: Hostname
 - name: HAWKULAR_USER
   description: Username that is used for accessing the Hawkular Services, if left blank a value will be generated.
-  displayName: Hawkular User
+  displayName: Hawkular Services User
   from: '[a-zA-Z0-9]{16}'
   generate: expression
 - name: HAWKULAR_PASSWORD
   description: Password that is used for accessing the Hawkular Services, if left blank a value will be generated.
-  displayName: Hawkular Password
+  displayName: Hawkular Services Password
   from: '[a-zA-Z0-9]{16}'
   generate: expression
 - name: HAWKULAR_SECRET
@@ -74,7 +74,7 @@ parameters:
 
 labels:
   template: hawkular-services
-message: Credentials for hawkular-services are ${HAWKULAR_USER}:${HAWKULAR_PASSWORD}
+message: Credentials for Hawkular Services are ${HAWKULAR_USER}:${HAWKULAR_PASSWORD}
 
 objects:
 - apiVersion: v1
@@ -182,7 +182,7 @@ objects:
             exec:
               command:
               - /opt/hawkular/bin/ready.sh
-            initialDelaySeconds: 35
+            initialDelaySeconds: 120
             timeoutSeconds: 3
             periodSeconds: 5
             successThreshold: 1
@@ -236,11 +236,11 @@ objects:
           readinessProbe:
             exec:
               command: ['nodetool', 'status']
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             timeoutSeconds: 10
             periodSeconds: 15
             successThreshold: 1
-            failureThreshold: 6
+            failureThreshold: 3
           livenessProbe:
             exec:
               command: ['nodetool', 'status']
