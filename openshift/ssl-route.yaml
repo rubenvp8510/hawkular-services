@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: hawkular-services-ssl
+spec:
+  tls:
+    termination: Reencrypt
+  to:
+    kind: Service
+    name: hawkular-services

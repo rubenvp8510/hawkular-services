@@ -78,6 +78,7 @@ objects:
     annotations:
       description: Exposes and load balances the application pods
       service.alpha.openshift.io/dependencies: '[{"name":"hawkular-cassandra","namespace":"","kind":"Service"}]'
+      service.alpha.openshift.io/serving-cert-secret-name: 'hawkular-ssl-secret'
     name: hawkular-services
   spec:
     ports:
@@ -152,11 +153,18 @@ objects:
             value: ${HAWKULAR_USER}
           - name: HAWKULAR_PASSWORD
             value: ${HAWKULAR_PASSWORD}
+          - name: HAWKULAR_PUBLIC_KEY_FILENAME
+            value: /client-secrets/tls.crt
+          - name: HAWKULAR_PRIVATE_KEY_FILENAME
+            value: /client-secrets/tls.key
           imagePullPolicy: IfNotPresent
           name: hawkular-services
           volumeMounts:
           - name: h-services-data
             mountPath: /var/opt/hawkular
+          - name: hawkular-secret-volume
+            mountPath: /client-secrets/
+            readOnly: true
           ports:
           - containerPort: 8080
           - containerPort: 8443
@@ -186,6 +194,9 @@ objects:
         - name: h-services-data
           persistentVolumeClaim:
             claimName: h-services-pvc
+        - name: hawkular-secret-volume
+          secret:
+            secretName: hawkular-ssl-secret
 
 - apiVersion: v1
   kind: DeploymentConfig
