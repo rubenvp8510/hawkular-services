@@ -273,6 +273,9 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <configuration>
+            <mapping>
+              <j2>SCRIPT_STYLE</j2>
+            </mapping>
             <excludes combine.children="append">
               <exclude>openshift/cert-examples/**/*.pem</exclude>
               <exclude>openshift/cert-examples/**/*.key</exclude>
