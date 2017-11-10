@@ -32,7 +32,7 @@ install:
 - git fetch origin --unshallow || true
 
 script:
-- ./mvnw -s .travis.maven.settings.xml verify -Pitest -Dfailsafe.useFile=false | grep -vF "[INFO] Downloading:" | grep
+- ./mvnw -s .travis.maven.settings.xml install -U -Pitest -Dfailsafe.useFile=false | grep -vF "[INFO] Downloading:" | grep
   -vF "[INFO] Downloaded:"; test ${PIPESTATUS[0]} -eq 0
 - ./mvnw -s .travis.maven.settings.xml docker:build -U -rf :hawkular-services-dist-docker -Ddocker.repo.name=hawkular
 

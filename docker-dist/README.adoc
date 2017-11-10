@@ -29,7 +29,8 @@ image to the local registry.
   mvn docker:build
 
 By default, this will create a docker image with the name
-"<username>/hawkular-services".
+"<username>/hawkular-services". Pass in "-Ddocker.repo.name=something"
+to change the repo name (e.g. "something/hawkular-services").
 
   docker images
 
