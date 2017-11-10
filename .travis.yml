@@ -21,6 +21,11 @@ notifications:
   webhooks:
     - http://hawkular-bot.herokuapp.com/notifications
 
+env:
+  global:
+  - secure: vsM0GafB9JRUCN992fpAT+lCcGB+pJGzbrbWbpj+ElFJXVCL05k0hic3nrY1qMcItNhd2UhUNIGB4Ypb01pefRA4HwIk93eTzwolo8P6gfzOIcfnOyRZU6WcDtiCxGlYEJfBdafulwlRQ6fBKs2e2mXqCcquDTMGy9Wo3uZb+6PLZrB3n9ZBuAHlw6l+Hpgz2fkFwK4gYPHrRwuYbOgbVHeC2GbQT/IncQeF9iOkEPmDPrgrFdSjqvptQ1MWRLu72Xds1j4Jgit/CDfA8RBKoKhkDnqcEGPfvJcT1vBMuVuBNMmb9siA7H5EBNLFPz87thOjwz56klFS80QsPOlqeqP10KwB5sLG+Un7vbTwgJJTze5wWjEKp/KKurnV9A1yOhExGTv1LCDXtvHpYdrCBvlWInmOFxbQcKaa/sYt375Dw6GCtyb2tqlNmthpUpHwfqbfCYtsan1GYpYifePS8Ya+FmOtlP1BzBpS/umHFP0WHc5mbgHO7jb4C+oRnZCjOfLuN6sl8BzCkgqobJ+26tUfBScYZ2zf0T5x1+fmCQgugrf+f9UuVDN/NZSJC6lbBoUQnR1h7CU57Je4nxVxWlPlRP/0x9vBzDBDmrSXuQGOKhE1poTdzm/PpSjFz9VaN+tkm//xuM6VQlKhi4zEo/hqSJsU5Eo7UE4Cn2Cxkmk=
+  - secure: h11U38T0whSaU2IjYvW+hySvOjV/FNPZPpYD1+dsUtr2YIY8wijINkCUYxYcVbhuDWmVAFsttck+/W+UuEt3YQQ2Txvwn37M8WlQyrooyanV09Nv/rForB3KEM8P3a6fbJJcwdFcy+3gvsXhMIbO5xDzrgBa35xg8qlg4zq0tHxd4+YDufIJipCAxO7gAnLYgQ4TKzh+CFa0n/8mKuCaVt1yuyImNnfPBlfgEYPqt2A7aJtIck6a9O62FpoNSD5clxsDuvZkxwva2VWRDVA/j9/g3vJtMffl2VpkZtOjA9EXCCAqN1yVgTTNQJvENHHFcPQFfj9oRSQcIe1l/GaaQ3jMSHrw2pxWZ5IzEvKE6uXYqZgCRuQg512kmASNOJI0VNsD36Z8kDhOs8fsrDsQYEu2r8NtkRgvXuYB3e5fQrloyoJgITPZXIHl0ABJOGkIjhJWAJlTUQN228FKTrcii7Z6jgqXr9LyS54xdS1nK5DskKwdFuSHO1UetJhY5bBRxEPKKFUnYYCMAuIMr7BNhXsfN+Ft4gGptry4FXRvAD0dEF/HRras3h3IWFbWH8cpHwqDb1U8Zk2qXOtPQnMhyT1YscRZlLlERa7TI9hE2i0snEkTIwk6ifjDHTCTmUabrx8EnCWnQZB2avu6JYT4ObTJGR/2+o8yeu5fjncn5Cg=
+
 install:
 - ./mvnw -version -B
 # unshallow is needed by license-maven-plugin
@@ -45,3 +50,26 @@ before_cache:
     echo "Cleaning the cached dirs (${cachedBytes} Bytes) because their size exceeds the free space (${availBytes} Bytes) left on the current partition"
     rm -Rf "$HOME/.m2"
   fi
+
+# Push the distro to docker hub.
+# Run the ruby client tests.
+after_success:
+  - export COMMIT_HASH=${TRAVIS_COMMIT}
+  - export DOCKER_VERSION=$(if [ "$TRAVIS_TAG" != "" ]; then echo $TRAVIS_TAG; elif [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi)
+  - export DOCKER_USER=$(if [ "$DOCKER_USER" == "" ]; then echo "unknown"; else echo $DOCKER_USER ; fi)
+  - export DOCKER_PASS=$(if [ "$DOCKER_PASS" == "" ]; then echo "unknown"; else echo $DOCKER_PASS ; fi)
+  - echo DOCKER_VERSION=$DOCKER_VERSION
+  - docker --version
+  - docker tag hawkular/hawkular-services hawkular/hawkular-services:${DOCKER_VERSION}
+  - docker images
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  - docker push hawkular/hawkular-services:${DOCKER_VERSION}
+  - bash .travis.hawkular-client.ruby.sh
+
+# Build only the master branch (for "latest" release) and version tags (e.g. "1.2.3" or "1.1.2.RC2" or "2.1.5.Final")
+# Add branch names below if we want to build and then push docker images built off of those branches.
+branches:
+  only:
+  - /^(\d+\.){2}(\d+){1}(\.[a-zA-Z\d]+)?$/
+  - 0.40.x
+
