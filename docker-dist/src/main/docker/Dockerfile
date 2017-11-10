@@ -34,7 +34,10 @@ ENV HAWKULAR_BACKEND=cassandra \
     HAWKULAR_USER=jdoe \
     HAWKULAR_USE_SSL=false \
     HAWKULAR_DATA=/var/opt/hawkular \
-    HAWKULAR_METRICS_TTL=${metrics_ttl}
+    HAWKULAR_METRICS_TTL=${metrics_ttl}\
+    HAWKULAR_PUBLIC_KEY_FILENAME="/client-secrets/hawkular-services-public.pem" \
+    HAWKULAR_PRIVATE_KEY_FILENAME="/client-secrets/hawkular-services-private.key" \
+    HAWKULAR_KEYPAIR_FILENAME="/client-secrets/hawkular-services.pkcs12"
 
 USER root
 RUN yum install --quiet -y openssl && \

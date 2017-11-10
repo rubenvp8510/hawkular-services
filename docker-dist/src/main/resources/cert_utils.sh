@@ -47,9 +47,9 @@ use_standalone_ssl_config() {
 
 add_certificate() {
   if [[ ${HAWKULAR_USE_SSL} = "true" ]]; then
-    local _private_key="/client-secrets/hawkular-services-private.key"
-    local _public_key="/client-secrets/hawkular-services-public.pem"
-    local _keypair="/client-secrets/hawkular-services.pkcs12"
+    local _public_key=${HAWKULAR_PUBLIC_KEY_FILENAME}
+    local _private_key=${HAWKULAR_PRIVATE_KEY_FILENAME}
+    local _keypair=${HAWKULAR_KEYPAIR_FILENAME}
 
     if [[ -f ${_private_key} ]] && [[ -s ${_private_key} ]] && \
        [[ -f ${_public_key} ]] && [[ -s ${_public_key} ]]; then
