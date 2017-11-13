@@ -28,7 +28,7 @@ parameters:
 - name: HAWKULAR_SERVICES_IMAGE
   description: What docker image should be used for Hawkular Services.
   displayName: Hawkular Services Docker Image
-  value: hawkular/hawkular-services:0.38.0.Final
+  value:  hawkular/hawkular-services:0.40.x
 - name: CASSANDRA_IMAGE
   description: What docker image should be used for cassandra node.
   displayName: Cassandra Docker Image
