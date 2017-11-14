@@ -1,0 +1,58 @@
+#
+# Copyright 2016-2017 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+---
+- name: Install Hawkular Services into openshift
+  hosts: localhost
+  vars_files:
+    - hawkular-services-ansible-vars.yaml
+  tasks:
+    - name: Create temp directory for doing work in on target
+      command: mktemp -td openshift-hawkular-ansible-XXXXXX
+      register: mktemp
+      changed_when: False
+
+    - name: Get cluster CA certificate
+      shell: oc extract $(oc get secret -o name | grep -- "-token-" | head -n1 ) --keys service-ca.crt --confirm
+      args:
+        chdir: '{{mktemp.stdout}}'
+
+    - name: Get CA Content
+      slurp: src='{{mktemp.stdout | quote}}/service-ca.crt'
+      register: route_dest_ca_cert
+
+    - set_fact: hawkular_key={{ lookup('file', ssl_private_key) }}
+      when: ssl_private_key | exists
+      changed_when: false
+
+    - set_fact: hawkular_cert={{ lookup('file', ssl_public_key) }}
+      when: ssl_public_key | exists
+      changed_when: false
+
+    - name: generate the hawkular-metrics route
+      template:
+        src: route.j2
+        dest: "{{ mktemp.stdout }}/hawkular-metrics-route.yaml"
+      vars:
+        tls:
+          certificate: "{{ hawkular_cert | default('') }}"
+          key: "{{ hawkular_key | default('') }}"
+          destination_ca_certificate: "{{ route_dest_ca_cert.content | b64decode }}"
+      changed_when: false
+
+    - name: Creating route
+      command: oc apply -f {{ mktemp.stdout }}/hawkular-metrics-route.yaml -n {{ project_name }}
