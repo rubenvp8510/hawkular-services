@@ -17,6 +17,12 @@
 
 apiVersion: v1
 kind: Template
+metadata:
+  name: hawkular-services-pv
+  annotations:
+    openshift.io/display-name: Hawkular Services persistent volume
+    description: Example of PV for Hawkular Services
+    tags: hawkular,hawkular-services,metrics,alerts,manageiq,cassandra,persistent
 parameters:
 - name: HAWKULAR_SERVICES_DATA_LIMIT
   description: Maximum amount data used by hawkular-services container (mostly logging)
