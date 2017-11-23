@@ -120,6 +120,8 @@ run_hawkular_services() {
          -Djboss.server.log.dir=${HAWKULAR_DATA:-/var/opt/hawkular}/log \
          -Dactivemq.artemis.client.global.thread.pool.max.size=${HAWKULAR_JMS_THREAD_POOL:-30} \
          -Dhawkular.agent.enabled=${HAWKULAR_AGENT_ENABLE} \
+         -Dhawkular.rest.host="https://127.0.0.1:8444" \
+         -Dhawkular.log.agent=DEBUG \
          -Dhawkular.rest.user=${username} \
          -Dhawkular.rest.password=${password} \
          -Dhawkular.metrics.default-ttl=${HAWKULAR_METRICS_TTL:-14} \

@@ -45,6 +45,22 @@ use_standalone_ssl_config() {
   cp ${JBOSS_HOME}/standalone/configuration/hawkular-javaagent-config-ssl.yaml ${JBOSS_HOME}/standalone/configuration/hawkular-javaagent-config.yaml
 }
 
+add_localhost_certificate() {
+  echo "------------------------------------"
+  echo "Generating localhost self-signed certificate"
+  local _dname="localhost"
+  keytool -genkeypair -keystore ${KEYSTORE_HOME}/hawkular-local.keystore -alias hawkular-local \
+    -dname "CN=${_dname}" -keyalg RSA -keysize 4096 -storepass hawkular \
+    -keypass hawkular -validity 3650 -ext san=ip:127.0.0.1
+
+  keytool -importkeystore -srckeystore ${KEYSTORE_HOME}/hawkular-local.keystore -srcalias hawkular-local -srcstorepass hawkular -srcstoretype JKS \
+    -destkeystore ${KEYSTORE_HOME}/hawkular.keystore -deststoretype JKS -destalias hawkular-local \
+    -deststorepass hawkular -destkeypass hawkular -noprompt
+
+  rm  ${KEYSTORE_HOME}/hawkular-local.keystore
+  echo "------------------------------------"
+}
+
 add_certificate() {
   if [[ ${HAWKULAR_USE_SSL} = "true" ]]; then
     local _public_key=${HAWKULAR_PUBLIC_KEY_FILENAME}
@@ -95,6 +111,7 @@ add_certificate() {
 
       add_cert_as_trusted
     fi
+    add_localhost_certificate
     use_standalone_ssl_config
   fi
 }
