@@ -26,6 +26,7 @@
   <config>
     <standalone template="configuration/standalone/hawkular-services-template.xml" subsystems="configuration/standalone/hawkular-services-subsystems.xml" output-file="standalone/configuration/standalone.xml" />
     <standalone template="configuration/standalone/hawkular-services-template-ssl.xml" subsystems="configuration/standalone/hawkular-services-subsystems-ssl.xml" output-file="standalone/configuration/standalone-ssl.xml" />
+    <standalone template="configuration/standalone/hawkular-services-template-docker-ssl.xml" subsystems="configuration/standalone/hawkular-services-subsystems-ssl.xml" output-file="standalone/configuration/standalone-docker-ssl.xml" />
   </config>
 
   <copy-artifacts>
