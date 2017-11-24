@@ -82,7 +82,7 @@
       <outputDirectory>${docker.jboss_home}/standalone/configuration</outputDirectory>
     </file>
     <file>
-      <source>${project.build.directory}/${project.build.finalName}/standalone/configuration/standalone-ssl.xml</source>
+      <source>${project.build.directory}/${project.build.finalName}/standalone/configuration/standalone-docker-ssl.xml</source>
       <outputDirectory>${docker.jboss_home}/standalone/configuration</outputDirectory>
     </file>
     <file>
