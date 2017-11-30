@@ -137,7 +137,7 @@ main() {
   source $(dirname "$0")/cert_utils.sh
   get_credentials
   create_user
-  add_certificate
+  use_standalone_ssl_config
   check_cassandra
   run_hawkular_services "$@"
 }

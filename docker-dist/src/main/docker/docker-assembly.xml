@@ -54,6 +54,11 @@
       <fileMode>755</fileMode>
     </file>
     <file>
+      <source>src/main/resources/entrypoint.sh</source>
+      <outputDirectory>${docker.hawkular_home}/bin</outputDirectory>
+      <fileMode>755</fileMode>
+    </file>
+    <file>
       <source>src/main/resources/ready.sh</source>
       <outputDirectory>${docker.hawkular_home}/bin</outputDirectory>
       <fileMode>755</fileMode>

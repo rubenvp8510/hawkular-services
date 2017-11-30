@@ -43,6 +43,11 @@ use_standalone_ssl_config() {
   cp ${JBOSS_HOME}/standalone/configuration/standalone-docker-ssl.xml ${JBOSS_HOME}/standalone/configuration/standalone.xml
 }
 
+set_certificate_permissions() {
+  chown jboss:jboss ${KEYSTORE_HOME}/hawkular.keystore
+  chmod ugo+rw ${KEYSTORE_HOME}/hawkular.keystore
+}
+
 add_certificate() {
   if [[ ${HAWKULAR_USE_SSL} = "true" ]]; then
     local _public_key=${HAWKULAR_PUBLIC_KEY_FILENAME}
@@ -93,6 +98,6 @@ add_certificate() {
 
       add_cert_as_trusted
     fi
-    use_standalone_ssl_config
+    set_certificate_permissions
   fi
 }
