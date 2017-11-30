@@ -151,14 +151,14 @@ objects:
               command:
               - /opt/hawkular/bin/ready.sh
             initialDelaySeconds: 180
-            timeoutSeconds: 3
+            timeoutSeconds: 15
           readinessProbe:
             exec:
               command:
               - /opt/hawkular/bin/ready.sh
             initialDelaySeconds: 35
-            timeoutSeconds: 3
-            periodSeconds: 5
+            timeoutSeconds: 15
+            periodSeconds: 20
             successThreshold: 1
             failureThreshold: 12
           resources:
